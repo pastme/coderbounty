@@ -1,25 +1,37 @@
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v2
+name: Search Labels
 
-  - name: Install Python
-    uses: actions/setup-python@v2
-    with:
-      python-version: '3.9'
+on:
+  push:
 
-  - name: Install PyGithub
-    run: pip install PyGithub
+jobs:
+  search-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  - name: Search labels
-    run: python search_labels.py
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
 
-  - name: Save results to CSV
-    run: |
-      echo "name,repository_url,repository_name" > results.csv
-      cat labels.json | jq -r '.labels[] | "\(.name),\(.repository_url),\(.repository_name)"' >> results.csv
+      - name: Install PyGithub
+        run: pip install PyGithub
 
-  - name: Upload results
-    uses: actions/upload-artifact@v2
-    with:
-      name: search-results
-      path: results.csv
+      - name: Search labels
+        run: python search_labels.py
+
+      - name: Save results to CSV
+        run: |
+          echo "name,repository_url,repository_name" > results.csv
+          cat labels.json | jq -r '.labels[] | "\(.name),\(.repository_url),\(.repository_name)"' >> results.csv
+
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: search-results
+          path: results.csv
+
+
+
+
